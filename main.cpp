@@ -1,5 +1,5 @@
 #include "DxLib.h"
-
+#include"windows.h"
 // ウィンドウのタイトルに表示する文字列
 const char TITLE[] = "xx2x_xx_ナマエ: タイトル";
 
@@ -44,7 +44,9 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	const int y = 4;
 	const int z = 4;
 	const int blockSize = 32;
-
+	const int interval = 20;
+	int MouseX = 0;
+	int MouseY = 0;
 	enum maptip
 	{
 		none,//0
@@ -82,6 +84,17 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 		}
 	};
 
+	int maptipBox[1][4][4] =
+	{
+		{
+			{0,0,0,0},
+			{0,0,0,0},
+			{0,0,0,0},
+			{0,0,0,0},
+		}
+	};
+
+
 	int blockHandle = 0;
 	blockHandle = LoadGraph("Resource/block.png");
 	// 最新のキーボード情報用
@@ -107,9 +120,25 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 		// 更新処理
 		//入れ替えるマップチップのNo(引数)を取得,例えば引数aとb
 		//マップチップの入れ替え
+		if (GetAsyncKeyState(VK_LBUTTON))
+		{
+			GetMousePoint(&MouseX, &MouseY);
+			//マップチップとマウス座標との当たり判定
+			
+			//changeFlag==trueのとき,マップチップを入れ替える
+			//falseだったらchangeFlagをtrueにする,触れたマップチップを取得
+		}
 		if (changeFlag == false && keys[KEY_INPUT_SPACE])
 		{
 			changeFlag = true;
+				for (int j = 0; j < y; j++)
+				{
+					for (int i = 0; i < x; i++)
+					{
+						maptipBox[0][j][i] = maptip[0][j][i];
+						maptip[1][j][i] = maptipBox[0][j][i];
+					}
+				}
 			/*arrayBox[a][0][0] = array[c][0][0];
 			arrayBox[b][0][0] = array[a][0][0];*/
 			//arrayBox[c][0][0] = array[b][0][0];
@@ -147,10 +176,10 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 							DrawGraph(x*blockSize+i * blockSize, j * blockSize, blockHandle, false);
 							break;
 						case 2:
-							DrawGraph(i* blockSize, 128 + j * blockSize, blockHandle, false);
+							DrawGraph(i* blockSize, y*blockSize + j * blockSize, blockHandle, false);
 							break;
 						default:
-							DrawGraph(x * blockSize + i * blockSize, 128 + j * blockSize, blockHandle, false);
+							DrawGraph(x * blockSize + i * blockSize, y * blockSize + j * blockSize, blockHandle, false);
 							break;
 						}
 					}
