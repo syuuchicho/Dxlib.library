@@ -40,43 +40,50 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 
 
 	// ゲームループで使う変数の宣言
-	const int x = 1;
-	const int y = 1;
-	const int z = 3;
-	const int Block_Size = 20;
+	const int x = 4;
+	const int y = 4;
+	const int z = 4;
+	const int blockSize = 32;
 
-
+	enum maptip
+	{
+		none,//0
+		block//1
+	};
 
 	bool changeFlag = false;
 
-	int array[z][y][x] =
+	int maptip[z][y][x] =
 	{
 		{
-			{2}//z=0
+			{1,1,1,1},
+			{1,0,0,1},
+			{1,0,0,1},
+			{1,1,1,1},//z=0
 		},
-
 		{
-			{1}//z=1
+			{0,0,0,0},
+			{0,1,1,0},
+			{0,1,1,0},
+			{0,0,0,0},//z=1
 		},
-
 		{
-			{0}//z=2
+			{0,0,1,1},
+			{0,1,0,1},
+			{1,0,1,0},
+			{1,1,0,0},//z=2
+
+		},
+		{
+			{1,1,0,0},
+			{1,0,1,0},
+			{0,1,0,1},
+			{0,0,1,1},//z=3
 		}
 	};
 
-	int arrayBox[z][y][x] =
-	{
-		{
-			{3}//z=0
-		},
-		{
-			{4}//z=1
-		},
-		{
-			{5}//z=2
-		},
-	};
-
+	int blockHandle = 0;
+	blockHandle = LoadGraph("Resource/block.png");
 	// 最新のキーボード情報用
 	char keys[256] = { 0 };
 
@@ -99,46 +106,55 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 
 		// 更新処理
 		//入れ替えるマップチップのNo(引数)を取得,例えば引数aとb
-		int a = 0;
-		int b = 1;
-		int c = 2;
 		//マップチップの入れ替え
-		if (changeFlag == false&&keys[KEY_INPUT_SPACE])
+		if (changeFlag == false && keys[KEY_INPUT_SPACE])
 		{
 			changeFlag = true;
-			arrayBox[a][0][0] = array[c][0][0];
-			arrayBox[b][0][0] = array[a][0][0];
+			/*arrayBox[a][0][0] = array[c][0][0];
+			arrayBox[b][0][0] = array[a][0][0];*/
 			//arrayBox[c][0][0] = array[b][0][0];
 			//保存したデータを配列に格納
-			array[a][0][0] = arrayBox[a][0][0];
+			/*array[a][0][0] = arrayBox[a][0][0];
 			array[b][0][0] = arrayBox[b][0][0];
-			array[c][0][0] = arrayBox[c][0][0];
+			array[c][0][0] = arrayBox[c][0][0];*/
 		}
 
 		DrawFormatString(0, 100, GetColor(255, 255, 255), "入れ替えた後\n");
-		DrawFormatString(0, 180, GetColor(255, 255, 255), "arrayBox[0][y][x]:%d,z:%d,y:%d,x:%d\n", arrayBox[0][0][0], 0, 0, 0);
+		/*DrawFormatString(0, 180, GetColor(255, 255, 255), "arrayBox[0][y][x]:%d,z:%d,y:%d,x:%d\n", arrayBox[0][0][0], 0, 0, 0);
 		DrawFormatString(0, 200, GetColor(255, 255, 255), "arrayBox[1][y][x]:%d,z:%d,y:%d,x:%d\n", arrayBox[1][0][0], 1, 0, 0);
 		DrawFormatString(0, 220, GetColor(255, 255, 255), "arrayBox[2][y][x]:%d,z:%d,y:%d,x:%d\n", arrayBox[2][0][0], 2, 0, 0);
-		
+
 
 		DrawFormatString(0, 120, GetColor(255, 255, 255), "array[0][y][x]:%d,z:%d,y:%d,x:%d\n", array[0][0][0], 0, 0, 0);
 		DrawFormatString(0, 140, GetColor(255, 255, 255), "array[1][y][x]:%d,z:%d,y:%d,x:%d\n", array[1][0][0], 1, 0, 0);
-		DrawFormatString(0, 160, GetColor(255, 255, 255), "array[2][y][x]:%d,z:%d,y:%d,x:%d\n", array[2][0][0], 2, 0, 0);
+		DrawFormatString(0, 160, GetColor(255, 255, 255), "array[2][y][x]:%d,z:%d,y:%d,x:%d\n", array[2][0][0], 2, 0, 0);*/
 
 		// 描画処理
 		for (int k = 0; k < z; k++)
 		{
-			if (k == 0)//z=0
+			for (int j = 0; j < y; j++)
 			{
-				DrawBox(0, 0, array[k][0][0] * Block_Size, 0 + Block_Size, GetColor(0, 0, 255), true);//青
-			}
-			if (k == 1)//z=1
-			{
-				DrawBox(0, 40, array[k][0][0] * Block_Size, 40 + Block_Size, GetColor(0, 255, 0), true);//緑
-			}
-			if (k == 2)//z=2
-			{
-				DrawBox(0,80, array[k][0][0] * Block_Size, 80 + Block_Size, GetColor(255, 0, 0), true);//赤
+				for (int i = 0; i < x; i++)
+				{
+					if (maptip[k][j][i]==block)
+					{
+						switch (k)
+						{
+						case 0:
+						DrawGraph(i * blockSize,j* blockSize, blockHandle, false);
+						break;
+						case 1:
+							DrawGraph(x*blockSize+i * blockSize, j * blockSize, blockHandle, false);
+							break;
+						case 2:
+							DrawGraph(i* blockSize, 128 + j * blockSize, blockHandle, false);
+							break;
+						default:
+							DrawGraph(x * blockSize + i * blockSize, 128 + j * blockSize, blockHandle, false);
+							break;
+						}
+					}
+				}
 			}
 		}
 
