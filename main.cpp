@@ -135,7 +135,10 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 				{
 					for (int i = 0; i < x; i++)
 					{
+						//入れ替えるマップチップを保存
 						maptipBox[0][j][i] = maptip[0][j][i];
+						//入れ替え
+						maptip[0][j][i] = maptip[1][j][i];
 						maptip[1][j][i] = maptipBox[0][j][i];
 					}
 				}
