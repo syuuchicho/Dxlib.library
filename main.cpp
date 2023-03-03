@@ -207,22 +207,27 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 		{
 			DrawCircle(MouseX, MouseY, MouseRadius, GetColor(255, 0, 0), false);
 		}
-		
+
 		//マップチップの枠
-		for (int j = 0; j < y2; j++)//y2=2今回限定
+		for (int j = 0; j < y2; j++)//y2=2今回限定, 8=一辺のBlockの数
 		{
 			for (int i = 0; i < x2; i++)//x2=2今回限定
 			{
 				if (maptipWin[j][i] == 0)
 				{
-					DrawBox(i  * WIN_WIDTH/x2, j * WIN_HEIGHT/y2, i * WIN_WIDTH / 2+WIN_WIDTH/2, j * WIN_HEIGHT / 2+WIN_HEIGHT/2, GetColor(255, 255, 255), false);
+					DrawBox(
+						i * 8 * blockSize / x2,
+						j * 8 * blockSize / y2,
+						i * 8 * blockSize / 2 + 8 * blockSize / 2,
+						j * 8 * blockSize / 2 + 8 * blockSize / 2,
+						GetColor(255, 255, 255), false);
 				}
 			}
 		}
-		
-		
+
+
 		/*DrawBox(x * blockSize, y * blockSize, x * blockSize + x * blockSize, y * blockSize + y * blockSize, GetColor(255, 255, 255), false);
-		
+
 		DrawBox(0, 0, x * blockSize, y * blockSize, GetColor(255, 255, 255), false);
 
 		DrawBox(x * blockSize, 0, x * blockSize + x * blockSize, y * blockSize, GetColor(255, 255, 255), false);
