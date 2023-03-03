@@ -47,14 +47,16 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	const int interval = 20;
 	int MouseX = 0;
 	int MouseY = 0;
+	int MouseRadius = 7;
+	int MouseInput = 0;
+
+	bool changeFlag = false;
+
 	enum maptip
 	{
 		none,//0
 		block//1
 	};
-
-	bool changeFlag = false;
-
 	int maptip[z][y][x] =
 	{
 		{
@@ -84,7 +86,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 		}
 	};
 
-	int maptipBox[1][4][4] =
+	int maptipBox[z][y][x] =
 	{
 		{
 			{0,0,0,0},
@@ -92,6 +94,15 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 			{0,0,0,0},
 			{0,0,0,0},
 		}
+	};
+
+	const int x2 = 2;
+	const int y2 = 2;
+
+	bool maptipWin[x2][y2] =
+	{
+		{0,0},
+		{0,0}
 	};
 
 
@@ -120,28 +131,28 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 		// 更新処理
 		//入れ替えるマップチップのNo(引数)を取得,例えば引数aとb
 		//マップチップの入れ替え
-		if (GetAsyncKeyState(VK_LBUTTON))
+		if (changeFlag == false && GetAsyncKeyState(VK_LBUTTON))
 		{
 			GetMousePoint(&MouseX, &MouseY);
 			//マップチップとマウス座標との当たり判定
-			
+
 			//changeFlag==trueのとき,マップチップを入れ替える
 			//falseだったらchangeFlagをtrueにする,触れたマップチップを取得
 		}
 		if (changeFlag == false && keys[KEY_INPUT_SPACE])
 		{
 			changeFlag = true;
-				for (int j = 0; j < y; j++)
+			for (int j = 0; j < y; j++)
+			{
+				for (int i = 0; i < x; i++)
 				{
-					for (int i = 0; i < x; i++)
-					{
-						//入れ替えるマップチップを保存
-						maptipBox[0][j][i] = maptip[0][j][i];
-						//入れ替え
-						maptip[0][j][i] = maptip[1][j][i];
-						maptip[1][j][i] = maptipBox[0][j][i];
-					}
+					//入れ替えるマップチップを保存
+					maptipBox[0][j][i] = maptip[0][j][i];
+					//入れ替え
+					maptip[0][j][i] = maptip[1][j][i];
+					maptip[1][j][i] = maptipBox[0][j][i];
 				}
+			}
 			/*arrayBox[a][0][0] = array[c][0][0];
 			arrayBox[b][0][0] = array[a][0][0];*/
 			//arrayBox[c][0][0] = array[b][0][0];
@@ -168,18 +179,18 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 			{
 				for (int i = 0; i < x; i++)
 				{
-					if (maptip[k][j][i]==block)
+					if (maptip[k][j][i] == block)
 					{
 						switch (k)
 						{
 						case 0:
-						DrawGraph(i * blockSize,j* blockSize, blockHandle, false);
-						break;
+							DrawGraph(i * blockSize, j * blockSize, blockHandle, false);
+							break;
 						case 1:
-							DrawGraph(x*blockSize+i * blockSize, j * blockSize, blockHandle, false);
+							DrawGraph(x * blockSize + i * blockSize, j * blockSize, blockHandle, false);
 							break;
 						case 2:
-							DrawGraph(i* blockSize, y*blockSize + j * blockSize, blockHandle, false);
+							DrawGraph(i * blockSize, y * blockSize + j * blockSize, blockHandle, false);
 							break;
 						default:
 							DrawGraph(x * blockSize + i * blockSize, y * blockSize + j * blockSize, blockHandle, false);
@@ -189,6 +200,37 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 				}
 			}
 		}
+
+		//マウス
+		DrawCircle(MouseX, MouseY, MouseRadius, GetColor(255, 255, 255), false);
+		if (GetAsyncKeyState(VK_LBUTTON))
+		{
+			DrawCircle(MouseX, MouseY, MouseRadius, GetColor(255, 0, 0), false);
+		}
+		
+		//マップチップの枠
+		for (int j = 0; j < y2; j++)//y2=2今回限定
+		{
+			for (int i = 0; i < x2; i++)//x2=2今回限定
+			{
+				if (maptipWin[j][i] == 0)
+				{
+					DrawBox(i  * WIN_WIDTH/x2, j * WIN_HEIGHT/y2, i * WIN_WIDTH / 2+WIN_WIDTH/2, j * WIN_HEIGHT / 2+WIN_HEIGHT/2, GetColor(255, 255, 255), false);
+				}
+			}
+		}
+		
+		
+		/*DrawBox(x * blockSize, y * blockSize, x * blockSize + x * blockSize, y * blockSize + y * blockSize, GetColor(255, 255, 255), false);
+		
+		DrawBox(0, 0, x * blockSize, y * blockSize, GetColor(255, 255, 255), false);
+
+		DrawBox(x * blockSize, 0, x * blockSize + x * blockSize, y * blockSize, GetColor(255, 255, 255), false);
+
+		DrawBox(0, y * blockSize, x * blockSize, y * blockSize + y * blockSize, GetColor(255, 255, 255), false);*/
+
+
+
 
 		//---------  ここまでにプログラムを記述  ---------//
 		// (ダブルバッファ)裏面
