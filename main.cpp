@@ -43,13 +43,19 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	const int x = 4;
 	const int y = 4;
 	const int z = 4;
+	int zBox = 0;
+	int zBox2 = 0;
+	int cx1 = 0;
+	int cy1 = 0;
+	int cx2 = 0;
+	int cy2 = 0;
 	const int blockSize = 32;
-	const int interval = 20;
+	int maptipWid = x * blockSize;
+	int maptipHei = y * blockSize;
 	int MouseX = 0;
 	int MouseY = 0;
 	int MouseRadius = 7;
 	int MouseInput = 0;
-
 	bool changeFlag = false;
 
 	enum maptip
@@ -129,40 +135,102 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 		//---------  ここからプログラムを記述  ----------//
 
 		// 更新処理
-		//入れ替えるマップチップのNo(引数)を取得,例えば引数aとb
-		//マップチップの入れ替え
-		if (changeFlag == false && GetAsyncKeyState(VK_LBUTTON))
+		GetMousePoint(&MouseX, &MouseY);
+		//changeFlag==trueのとき,マップチップを入れ替える
+		if (GetAsyncKeyState(VK_LBUTTON))
 		{
-			GetMousePoint(&MouseX, &MouseY);
-			//マップチップとマウス座標との当たり判定
-
-			//changeFlag==trueのとき,マップチップを入れ替える
-			//falseだったらchangeFlagをtrueにする,触れたマップチップを取得
-		}
-		if (changeFlag == false && keys[KEY_INPUT_SPACE])
-		{
-			changeFlag = true;
-			for (int j = 0; j < y; j++)
+			for (int j = 0; j < y2; j++)
 			{
-				for (int i = 0; i < x; i++)
+				for (int i = 0; i < x2; i++)
 				{
-					//入れ替えるマップチップを保存
-					maptipBox[0][j][i] = maptip[0][j][i];
-					//入れ替え
-					maptip[0][j][i] = maptip[1][j][i];
-					maptip[1][j][i] = maptipBox[0][j][i];
+					 cx1 = i * 8 * blockSize / x2;
+					 cy1 = j * 8 * blockSize / y2;
+					 cx2 = i * 8 * blockSize / 2 + 8 * blockSize / 2;
+					 cy2 = j * 8 * blockSize / 2 + 8 * blockSize / 2;
+					if (MouseX >= cx1 && MouseX <= cx2 || MouseY >= cy1 && MouseY <= cy2)
+					{
+						if (changeFlag==true)
+						{
+							zBox2 = 2 * j + i;
+							for (int j = 0; j < y; j++)
+							{
+								for (int i = 0; i < x; i++)
+								{
+									//入れ替えるマップチップを保存
+									maptipBox[0][j][i] = maptip[zBox2][j][i];
+									//入れ替え
+									maptip[zBox2][j][i] = maptip[zBox][j][i];
+									maptip[zBox][j][i] = maptipBox[0][j][i];
+								}
+							}
+							changeFlag = false;
+						}
+						else if (changeFlag==false)
+						{
+							zBox = 2 * j + i;
+							changeFlag = true;
+						}
+					}
 				}
 			}
-			/*arrayBox[a][0][0] = array[c][0][0];
-			arrayBox[b][0][0] = array[a][0][0];*/
-			//arrayBox[c][0][0] = array[b][0][0];
-			//保存したデータを配列に格納
-			/*array[a][0][0] = arrayBox[a][0][0];
-			array[b][0][0] = arrayBox[b][0][0];
-			array[c][0][0] = arrayBox[c][0][0];*/
-		}
 
-		DrawFormatString(0, 100, GetColor(255, 255, 255), "入れ替えた後\n");
+
+
+
+		//if (changeFlag == true && GetAsyncKeyState(VK_LBUTTON))
+		//{
+		//	for (int j = 0; j < y2; j++)
+		//	{
+		//		for (int i = 0; i < x2; i++)
+		//		{
+		//			int cx1 = i * 8 * blockSize / x2;
+		//			int cy1 = j * 8 * blockSize / y2;
+		//			int cx2 = i * 8 * blockSize / 2 + 8 * blockSize / 2;
+		//			int cy2 = j * 8 * blockSize / 2 + 8 * blockSize / 2;
+		//			if (MouseX >= cx1 && MouseX <= cx2 || MouseY >= cy1 && MouseY <= cy2)
+		//			{
+		//				int zBox2 = 2 * j + i;
+		//			}
+		//		}
+		//	}
+
+		//	for (int j = 0; j < y; j++)
+		//	{
+		//		for (int i = 0; i < x; i++)
+		//		{
+		//			//入れ替えるマップチップを保存
+		//			maptipBox[0][j][i] = maptip[zBox2][j][i];
+		//			//入れ替え
+		//			maptip[zBox2][j][i] = maptip[zBox][j][i];
+		//			maptip[zBox][j][i] = maptipBox[0][j][i];
+		//		}
+		//	}
+		//	changeFlag = false;
+		//}
+
+		////入れ替えるマップチップのNo(引数)を取得,例えば引数aとb
+		//if (changeFlag == false && GetAsyncKeyState(VK_LBUTTON))
+		//{
+		//	//マップチップとマウス座標との当たり判定
+		//	for (int j = 0; j < y2; j++)
+		//	{
+		//		for (int i = 0; i < x2; i++)
+		//		{
+		//			int cx1 = i * 8 * blockSize / x2;
+		//			int cy1 = j * 8 * blockSize / y2;
+		//			int cx2=i * 8 * blockSize / 2 + 8 * blockSize / 2;
+		//			int cy2=j * 8 * blockSize / 2 + 8 * blockSize / 2;
+		//			if (MouseX>=cx1&&MouseX<=cx2||MouseY>=cy1&&MouseY<=cy2)
+		//			{
+		//				int zBox = 2 * j + i;
+		//			}
+		//		}
+		//	}
+		//				changeFlag = true;
+		}
+		
+
+		DrawFormatString(500, 100, GetColor(255, 255, 255), "changeFlag:%d",changeFlag);
 		/*DrawFormatString(0, 180, GetColor(255, 255, 255), "arrayBox[0][y][x]:%d,z:%d,y:%d,x:%d\n", arrayBox[0][0][0], 0, 0, 0);
 		DrawFormatString(0, 200, GetColor(255, 255, 255), "arrayBox[1][y][x]:%d,z:%d,y:%d,x:%d\n", arrayBox[1][0][0], 1, 0, 0);
 		DrawFormatString(0, 220, GetColor(255, 255, 255), "arrayBox[2][y][x]:%d,z:%d,y:%d,x:%d\n", arrayBox[2][0][0], 2, 0, 0);
