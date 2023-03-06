@@ -56,9 +56,10 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	int MouseY = 0;
 	int MouseRadius = 7;
 	int MouseInput = 0;
-	int changeFlag = 0;
 	const int chanTimer = 60;
 	int changetime = 0;
+	int changeFlag = 0;
+	bool isPause = false;
 
 	enum maptip
 	{
@@ -139,81 +140,98 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 		// 更新処理
 		GetMousePoint(&MouseX, &MouseY);
 		//changeFlag==trueのとき,マップチップを入れ替える
-		for (int j = 0; j < y2; j++)
+
+		/*if (oldkeys[KEY_INPUT_SPACE] == 0 && keys[KEY_INPUT_SPACE] == 1)
 		{
-			for (int i = 0; i < x2; i++)
+			if (isPause == true)
 			{
-				cx1 = i * 8 * blockSize / x2;
-				cy1 = j * 8 * blockSize / y2;
-				cx2 = i * 8 * blockSize / x2 + 8 * blockSize / 2;
-				cy2 = j * 8 * blockSize / y2 + 8 * blockSize / 2;
-
-				if (MouseX >= cx1 && MouseX <= cx2 && MouseY >= cy1 && MouseY <= cy2)
-				{
-					zBox = 2 * j + i;
-					maptipWin[j][i] = 1;
-				}
-
-				else
-				{
-					maptipWin[j][i] = 0;
-				}
+				isPause = false;
 			}
-		}
-
-		if (GetAsyncKeyState(VK_LBUTTON)&&changeFlag==1)
-		{
-			changeFlag = 2;
-			
-			for (int j = 0; j < y; j++)
+			else if (isPause == false)
 			{
-				for (int i = 0; i < x; i++)
-				{
-					//入れ替え
-					maptip[zBox2][j][i] = maptip[zBox][j][i];
-					maptip[zBox][j][i] = maptipBox[0][j][i];
-
-				}
+				isPause = true;
 			}
-		}
+		}*/
 
-		if (keys[KEY_INPUT_SPACE])
-		{
-			changeFlag = 0;
-		}
-
-		if (GetAsyncKeyState(VK_LBUTTON))
+		if (isPause == false)
 		{
 			for (int j = 0; j < y2; j++)
 			{
 				for (int i = 0; i < x2; i++)
 				{
-					if (maptipWin[j][i] == 1)
-					{
-						changeFlag = 1;
-						zBox2 = 2 * j + i;
-						for (int j = 0; j < y; j++)
-						{
-							for (int i = 0; i < x; i++)
-							{
-								//入れ替えるマップチップを保存
-								maptipBox[0][j][i] = maptip[zBox2][j][i];
-								////入れ替え
-								//maptip[zBox2][j][i] = maptip[zBox][j][i];
-								//maptip[zBox][j][i] = maptipBox[0][j][i];
-							}
-						}
-					}
+					cx1 = i * 8 * blockSize / x2;
+					cy1 = j * 8 * blockSize / y2;
+					cx2 = i * 8 * blockSize / x2 + 8 * blockSize / 2;
+					cy2 = j * 8 * blockSize / y2 + 8 * blockSize / 2;
 
-					/*if (changeFlag==0)
+					if (MouseX >= cx1 && MouseX <= cx2 && MouseY >= cy1 && MouseY <= cy2)
 					{
 						zBox = 2 * j + i;
-						changeFlag = true;
-					}*/
+						maptipWin[j][i] = 1;
+					}
 
+					else
+					{
+						maptipWin[j][i] = 0;
+					}
 				}
 			}
-			
+
+			if (GetAsyncKeyState(VK_LBUTTON) && changeFlag == 1)
+			{
+				changeFlag = 2;
+
+				for (int j = 0; j < y; j++)
+				{
+					for (int i = 0; i < x; i++)
+					{
+						//入れ替え
+						maptip[zBox2][j][i] = maptip[zBox][j][i];
+						maptip[zBox][j][i] = maptipBox[0][j][i];
+
+						isPause == false;
+					}
+				}
+			}
+
+			if (keys[KEY_INPUT_SPACE])
+			{
+				changeFlag = 0;
+			}
+
+			if (GetAsyncKeyState(VK_LBUTTON)&&changeFlag==0)
+			{
+				for (int j = 0; j < y2; j++)
+				{
+					for (int i = 0; i < x2; i++)
+					{
+						if (maptipWin[j][i] == 1)
+						{
+							changeFlag = 1;
+							zBox2 = 2 * j + i;
+							for (int j = 0; j < y; j++)
+							{
+								for (int i = 0; i < x; i++)
+								{
+									//入れ替えるマップチップを保存
+									maptipBox[0][j][i] = maptip[zBox2][j][i];
+									////入れ替え
+									//maptip[zBox2][j][i] = maptip[zBox][j][i];
+									//maptip[zBox][j][i] = maptipBox[0][j][i];
+								}
+							}
+						}
+
+						/*if (changeFlag==0)
+						{
+							zBox = 2 * j + i;
+							changeFlag = true;
+						}*/
+
+					}
+				}
+			}
+
 
 			//if (changeFlag == true && GetAsyncKeyState(VK_LBUTTON))
 			//{
@@ -270,6 +288,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 
 
 
+
 		DrawFormatString(500, 100, GetColor(255, 255, 255), "changeFlag:%d", changeFlag);
 		DrawFormatString(500, 120, GetColor(255, 255, 255), "zBox:%d", zBox);
 		DrawFormatString(500, 140, GetColor(255, 255, 255), "zBox2:%d", zBox2);
@@ -277,6 +296,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 		DrawFormatString(500, 180, GetColor(255, 255, 255), "maptipWin[0][1]:%d", maptipWin[0][1]);
 		DrawFormatString(500, 200, GetColor(255, 255, 255), "maptipWin[1][0]:%d", maptipWin[1][0]);
 		DrawFormatString(500, 220, GetColor(255, 255, 255), "maptipWin[1][1]:%d", maptipWin[1][1]);
+		DrawFormatString(500, 240, GetColor(255, 255, 255), "isPause:%d", isPause);
 
 
 
